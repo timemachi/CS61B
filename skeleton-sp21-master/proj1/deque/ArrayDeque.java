@@ -47,11 +47,11 @@ public class ArrayDeque<T> implements Deque<T> {
 
     @Override
     public void addFirst(T item) {
-        if (size == items.length) {
+        if (size == items.length) { //no more place to new items
             expand();
         }
         items[nextFirst] = item;
-        size += 1;
+        size += 1;  //https://docs.google.com/presentation/d/1XBJOht0xWz1tEvLuvOL4lOIaY0NSfArXAvqgkrx0zpc/edit#slide=id.g1094ff4355_0_35
         nextFirst -= 1;
         if (nextFirst < 0) {
             nextFirst = items.length - 1;
