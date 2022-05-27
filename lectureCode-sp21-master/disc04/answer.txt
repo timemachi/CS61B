@@ -1,0 +1,88 @@
+44 public class TestAnimal {
+45 	public static void main(String[] args) {
+46 		Animal a = new Animal("Pluto", 10);
+47 		Cat c = new Cat("Garfield", 6);
+48 		Dog d = new Dog("Fido", 4);
+49 		a.greet(); // Animal Pluto says Huh?
+50 		c.greet(); // Cat Garfield says Meow!
+51 		d.greet(); // Dog Fido says Woof !
+52 		c.play(); // "Woo it is so much fun being an animal!"
+53 		c.play(":)") // Woo it is so much fun being a cat!:)
+54 		a = c;
+55 		((Cat) a).greet(); // Cat Garfield says Meow!
+56 		((Cat) a).play(":D"); // Woo it is so much fun being a cat!:D
+57 		a.play(14); //  Compile time Error
+58 		((Dog) a).play(12); // Runtime Error
+59 		a.greet(); // Cat Garfield says Meow!
+	c = a; //  Compile time Error
+c = (Cat) a 
+61 	}
+62 }
+
+18 public class D {
+19 	public static void main (String[] args) {
+20 		B a0 = new A(); Dynamic type must be B or subclass of B
+21 		a0.m1();  		//Am1->5 XX!cascading: prev line failed, so a0 can't be initialized
+22 		a0.m2(16);	//Bm2y->16 XX!cascading: prev line failed, so a0 can't be initialized
+23 		A b0 = new B(); Possible !
+24 		System.out.println(b0.x); //5
+25 		b0.m1();		//Am1->5
+26 		b0.m2();		//Bm2->5
+27 		b0.m2(61);	//Bm2y->61 XX! b0 is a A, can't compile: no such methode in A or upper
+28 		B b1 = new B();
+29 		b1.m2(61);	//Bm2y->61
+30 		b1.m3();		//Bm3->called
+31 		A c0 = new C();
+32 		c0.m2();		//Cm2->5
+33 		C c1 = (A) new C();
+34 		A a1 = (A) c0;
+35 		C c2 = (C) a1; XX Can't assign c1 to an A (sub-class can't assigned to higher-class)
+36 		c2.m3();		//Bm3->called
+37 		c2.m4();		//Cm4->5 XX! invalid
+38 		c2.m5();		//Cm5->6
+39 		((C) c0).m3();	//Bm3->called
+40 		(C) c0.m2();	//Cm2->5 XX ! This would cast the result of what the method returns and
+it returns void therefore compile-time error
+41 		b0.update();
+42 		b0.m1();		//Am1->99
+43 	}
+44 }
+
+
+1 Person itai = new Person();
+2
+3 SoccerPlayer shivani = new Person();
+4// Invalide !
+5 Athlete sohum = new SoccerPlayer();
+6
+7 Person jack = new Athlete();
+8
+9 Athlete anjali = new Athlete();
+10
+11 SoccerPlayer chirasree = new SoccerPlayer();
+12
+13 itai.watch(chirasree);
+14 //wow
+15 jack.watch(sohum);
+16 //Error
+17 itai.speakTo(sohum);
+18// kudos
+19 jack.speakTo(anjali);
+20// kudos
+21 anjali.speakTo(chirasree);
+22// take notes
+23 sohum.speakTo(itai); 
+24// Error XX hmpm 一旦指定了new subclass，class就变了
+25 chirasree.speakTo((SoccerPlayer) sohum);
+26//Respect
+27 sohum.watch(itai);
+28//TypeError
+29 sohum.watch((Athlete) itai); itai is not a athlete ! only a person
+30//game on XX RE(runtime error)
+31 ((Athlete) jack).speakTo(anjali);
+32//take notes
+33 ((SoccerPlayer) jack).speakTo(chirasree); jack is noly a athlete! not a soccerplayer
+34//hmph XX RE
+35 ((Person) chirasree).speakTo(itai);
+//kudos XX hmph Class of chirasree is always a soccerplayer ! First of all use his own class!
+
