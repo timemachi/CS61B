@@ -1,31 +1,14 @@
-public Iterator<Integer> iterator()
+28 Person n = new Person("Neil", 12);
+29 Person a = new Grandma("Ada", 60);
+30 Grandma v = new Grandma("Vidya", 80);
+31 Grandma al = new Person("Alex", 70); Compile time Error
+32 n.greet(a);	Hello, Ada
+33 n.greet(v);	Hello, Vidya 
+34 v.greet(a);	Hello, young whippersnapper //a as a person
+35 v.greet((Grandma) a);	How was bingo, Ada	
+36 a.greet(n);	Hello, young whippersnapper //a as a grandma
+37 a.greet(v);	Hello, young whippersnapper //v as a person, why?
+38 ((Grandma) a).greet(v);	How was bingo, Vidya?
+39 ((Grandma) n).greet(v);	Runtime Error
 
-public boolean hasNext()
-public Integer next()
 
-1 public class OHRequest {
-2 	public String description;
-3 	public String name;
-4 	public OHRequest next;
-5
-6 	public OHRequest(String description, String name, OHRequest next) {
-7 		this.description = description;
-8 		this.name = name;
-9 		this.next = next;
-10 	}
-11 }
-
-import java.util.Iterator;
-
-public class OHIterator implements Iterator<OHRequest>{
-	OHRequest curr;
-
-	public OHIterator() {
-		curr = queue;
-	}
-	
-	public boolean isGood(String description) {
-		return description != null && description.length() > 5;
-	}
-
-}
