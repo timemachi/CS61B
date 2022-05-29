@@ -1,0 +1,31 @@
+public Iterator<Integer> iterator()
+
+public boolean hasNext()
+public Integer next()
+
+1 public class OHRequest {
+2 	public String description;
+3 	public String name;
+4 	public OHRequest next;
+5
+6 	public OHRequest(String description, String name, OHRequest next) {
+7 		this.description = description;
+8 		this.name = name;
+9 		this.next = next;
+10 	}
+11 }
+
+import java.util.Iterator;
+
+public class OHIterator implements Iterator<OHRequest>{
+	OHRequest curr;
+
+	public OHIterator() {
+		curr = queue;
+	}
+	
+	public boolean isGood(String description) {
+		return description != null && description.length() > 5;
+	}
+
+}
