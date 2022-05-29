@@ -17,10 +17,7 @@ public class OHIterator implements Iterator<OHRequest> {
         while (curr != null && !isGood(curr.description)) {
             curr = curr.next;
         }
-        if (curr == null) {
-            return false;
-        }
-        return true;
+        return curr != null;
     }
 
     @Override
