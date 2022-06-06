@@ -89,9 +89,7 @@ class Utils {
     }
 
     /** Write OBJ to FILE. */
-    static void writeObject(File file, Serializable obj) {
-        writeContents(file, serialize(obj));
-    }
+    static void writeObject(File file, Serializable obj) {writeContents(file, serialize(obj));}
 
 
     /* OTHER FILE UTILITIES */
