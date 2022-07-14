@@ -119,7 +119,7 @@ public class TestMyHashMap {
     }
 
     public static void functionalityTest(MyHashMap<String, String> dictionary,
-                                   MyHashMap<String, Integer> studentIDs) {
+                                         MyHashMap<String, Integer> studentIDs) {
         assertEquals(0, dictionary.size());
 
         // can put objects in dictionary and get them

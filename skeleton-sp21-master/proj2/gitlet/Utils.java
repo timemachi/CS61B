@@ -136,7 +136,7 @@ class Utils {
         }
     }
 
-    /** Return an object of type T read from FILE, casting it to EXPECTEDCLASS.
+    /** Return an object of type T read from FILE, casting it to EXPECTED CLASS.
      *  Throws IllegalArgumentException in case of problems. */
     static <T extends Serializable> T readObject(File file,
                                                  Class<T> expectedClass) {
