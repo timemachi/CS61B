@@ -5,6 +5,9 @@ package byow.Core;
  *  in either keyboard or input string mode.
  */
 public class Main {
+    //命令行长度大于2：报错；
+    //命令行长度等于2， 第一个string是-s：运行Engine，用interactWithInputString运行第二个string
+    //否则运行interactWithKeyboard()
     public static void main(String[] args) {
         if (args.length > 2) {
             System.out.println("Can only have two arguments - the flag and input string");
