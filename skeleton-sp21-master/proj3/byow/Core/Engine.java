@@ -2,6 +2,7 @@ package byow.Core;
 
 import byow.TileEngine.TERenderer;
 import byow.TileEngine.TETile;
+import byow.TileEngine.Tileset;
 
 public class Engine {
     TERenderer ter = new TERenderer();
@@ -50,18 +51,8 @@ public class Engine {
         if (seed == -1) {throw new IllegalArgumentException("first command should be N"); }
         if (seed == -2) {throw new IllegalArgumentException("last command should be S"); }
 
-        //seed is worldGenerator's argument to create a new random world
-
-
-
-
-
-
-
-        TETile[][] finalWorldFrame = null;
-        return finalWorldFrame;
-
-
-
+        World world = new World(WIDTH, HEIGHT);
+        world.randomMap(seed);
+        return world.getWorldMap();
     }
 }
