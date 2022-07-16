@@ -4,6 +4,7 @@ import byow.TileEngine.TERenderer;
 import byow.TileEngine.TETile;
 import byow.TileEngine.Tileset;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 public class World {
@@ -34,8 +35,8 @@ public class World {
             }
         }
         //create random rooms in the map
-        //first step:  create random(4-7] room in the map
         int numOfRoom = random.nextInt(8, 12);
+        ArrayList<Room> rooms = new ArrayList<Room>();
         int num = 0; // number of room already created
         while (num <= numOfRoom) {
             int x = random.nextInt(1, width - 1);
@@ -43,13 +44,48 @@ public class World {
             position p = new position(x, y);
             int L = random.nextInt(7, width / 3);
             int H = random.nextInt(5, height / 3);
-            if (validRoom(p, L, H)) {
+            Room room = new Room(p, L, H);
+            if (validRoom(room)) {
                 num += 1;
-                addRectangularRoom(p, L, H);
+                rooms.add(room);
+                addRectangularRoom(room);
             }
         }
+        //TODO 有了room这个class，可以更容易获得每个room的信息了
     }
+    public static class Room {
+        private static position position;
+        private static int length;
+        private static int height;
 
+        public Room(position p, int L, int H) {
+            this.position = p;
+            this.length = L;
+            this.height = H;
+        }
+        public ArrayList<position> getPositions() {
+            ArrayList<position> positions = new ArrayList<position>();
+            for (int i = position.x; i < position.x + length; i++) {
+                for (int j = position.y; j < position.y + height; j++) {
+                    position temp = new position(i, j);
+                    positions.add(temp);
+                }
+            }
+            return positions;
+        }
+        public ArrayList<position> getWalls() {
+            ArrayList<position> walls = new ArrayList<position>();
+            for (position a : this.getPositions()) {
+                if (a.x == position.x || a.x == position.x + length - 1
+                        || a.y == position.y || a.y == position.y + height - 1) {
+                    walls.add(a);
+                }
+            }
+            return walls;
+        }
+        //TODO 给room加一个开门（与外界联通）的功能：可以开锁着的门和非锁着的门。arguments是point（检查是否是墙）和TETile（确定材质）
+
+    }
 
     /**
      * Helper class to localise one tile in world:
@@ -65,39 +101,40 @@ public class World {
         }
     }
 
+    public void draw(position p, TETile tile) {
+        worldMap[p.x][p.y] = tile;
+    }
+
     /** Add one Rectangle room in world from position p
-     * @param p left-bottom point of the room
-     * @param L Length of the room
-     * @param H Height of the room
+     * @param room this room
      */
-    private void addRectangularRoom(position p, int L, int H) {
+    private void addRectangularRoom(Room room) {
+        position p = room.position;
+        int L = room.length;
+        int H = room.height;
         //check if the Rectangle out of world
         if (p.x + L > width || p.y + H > height) {
             throw new IllegalArgumentException("Room out of map");
         }
         //create room closed: outside walls and inside floors, without door
-        for (int i = p.x; i < p.x + L; i++) {
-            worldMap[i][p.y] = Tileset.WALL;
-            worldMap[i][p.y + H - 1] = Tileset.WALL;
+        for (position position : room.getPositions()) {
+            TETile floor = Tileset.FLOOR;
+            draw(position, floor);
         }
-        for (int i = p.y; i < p.y + H; i++) {
-            worldMap[p.x][i] = Tileset.WALL;
-            worldMap[p.x + L - 1][i] = Tileset.WALL;
-        }
-        for (int i = p.x + 1; i < p.x + L - 1; i++) {
-            for (int j = p.y + 1; j < p.y + H - 1; j++) {
-                worldMap[i][j] = Tileset.FLOWER;
-            }
+        for (position position : room.getWalls()) {
+            TETile wall = Tileset.WALL;
+            draw(position, wall);
         }
     }
 
     /**To make sure if a room duplicate with others
-     * @param p given position
-     * @param L width of room
-     * @param H height of room
+     * @param room
      * @return Can we add room in this place with givens arguments
      */
-    private boolean validRoom(position p, int L, int H) {
+    private boolean validRoom(Room room) {
+        position p = room.position;
+        int L = room.length;
+        int H = room.height;
 
         if (p.x + L > width - 1|| p.y + H > height - 1) {
             return false;
@@ -114,7 +151,7 @@ public class World {
 
     public static void main(String[] args) {
         World world = new World(80, 40);
-        world.randomMap(462);
+        world.randomMap(4555);
 
         TERenderer ter = new TERenderer();
         ter.initialize(80, 40);
