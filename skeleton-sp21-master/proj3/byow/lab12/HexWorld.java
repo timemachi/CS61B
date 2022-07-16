@@ -108,9 +108,7 @@ public class HexWorld {
         }
     }
 
-    /** Picks a RANDOM tile with a 33% change of being
-     *  a wall, 33% chance of being a flower, and 33%
-     *  chance of being empty space.
+    /** Picks a RANDOM tile
      */
     private static TETile randomTile() {
         int tileNum = RANDOM.nextInt(5);
