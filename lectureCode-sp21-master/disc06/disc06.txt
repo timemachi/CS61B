@@ -1,0 +1,14 @@
+The naive implementation was maintaining a record of every single connection. Improvements
+made were:
+- Keeping track of sets rather than connections (QuickFind)
+- Tracking set membership by recording parent not set # (QuickUnion)
+- Union by Size (WeightedQuickUnion)
+- Path Compression (WeightedQuickUnionWithPathCompression)
+union by size and path compression
+
+0-8
+union find tree
+0 1 2 3 4 5 6 7 8 
+6 2 3 3 4 7 4 2 4 
+
+find(3): 3

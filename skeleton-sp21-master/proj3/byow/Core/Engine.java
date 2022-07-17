@@ -9,6 +9,7 @@ public class Engine {
     /* Feel free to change the width and height. */
     public static final int WIDTH = 80;
     public static final int HEIGHT = 80;
+    private long SEED;
 
     /**
      * Method used for exploring a fresh world. This method should handle all inputs,
@@ -46,13 +47,18 @@ public class Engine {
         //
         // See proj3.byow.InputDemo for a demo of how you can make a nice clean interface
         // that works for many different input types.
-        StringInput stringInput = new StringInput(input);
-        int seed = stringInput.getSeed();
-        if (seed == -1) {throw new IllegalArgumentException("first command should be N"); }
-        if (seed == -2) {throw new IllegalArgumentException("last command should be S"); }
-
-        World world = new World(WIDTH, HEIGHT);
-        world.randomMap(seed);
-        return world.getWorldMap();
+        if(input.toUpperCase().contains("N") && input.toUpperCase().contains("S")) {
+            int seedStart = input.toUpperCase().indexOf("N") + 1;
+            int seedStop = input.toUpperCase().indexOf("S");
+            if(input.substring(seedStart, seedStop).length() > 0) {
+                SEED = Long.valueOf(input.substring(seedStart, seedStop));
+            } else {
+                throw new IllegalArgumentException("You must input a number between N and S");
+            }
+        } else {
+            throw new IllegalArgumentException("Please input a string starting with N and ending with S.");
+        }
+        RandomWorldGenerator randomWorldGenerator = new RandomWorldGenerator(WIDTH, HEIGHT, SEED);
+        return randomWorldGenerator.getRandomWorldFrame();
     }
 }
