@@ -28,7 +28,7 @@ public class RandomWorldGenerator {
             placeRandomRoom(randomWorldFrame, roomStart, RANDOM); //随机放置房子。三个arguments分别是：1.地图；2.刚刚生成的随机position； 3.RANDOM
         }                                                           //但是有可能放不了房子。因此要尝试这么多次。这么做后果是会放好多房子在里面。但是感觉算法很奇怪。可是随机性很好，纯粹靠尝试。
         //下面这个神奇的算法更是重量级，纯粹用随机性随机放置hallway。所以要尝试更多次。让我们来看看效果
-        for(int i = 0; i < 2 * Math.max(WIDTH, HEIGHT); i++) { //尝试次数：高宽中较大值的2倍
+        for(int i = 0; i < Math.max(WIDTH, HEIGHT) * 2; i++) { //尝试次数：高宽中较大值的2倍
             Position hallwayStart = new Position(RandomUtils.uniform(RANDOM, WIDTH), RandomUtils.uniform(RANDOM, HEIGHT)); //一样的方法：生成随机hallwayStart
             placeARandomHallway(randomWorldFrame, hallwayStart, RANDOM);                                                   //放置随机hallway
         }
@@ -81,7 +81,6 @@ public class RandomWorldGenerator {
             }
         }
     }
-
     /**
      *
      * @param world 世界
@@ -91,7 +90,7 @@ public class RandomWorldGenerator {
      * @return 能不能放房子进去
      */
     private boolean canPlaceARoom(TETile[][] world, Position p, int roomWidth, int roomHeight) {
-        if(p.x + roomWidth >= WIDTH || p.y + roomHeight >= HEIGHT) { //先看房子有没有出地图之外
+        if(p.x + roomWidth >= WIDTH - 3|| p.y + roomHeight >= HEIGHT - 3 || p.x < 3 || p.y < 3) { //先看房子有没有离地图边缘3格
             return false;
         }
         for(int i = p.x; i < p.x + roomWidth; i++) {    //检查房子的每个点：如果不是nothing就返回false
@@ -245,7 +244,7 @@ public class RandomWorldGenerator {
 
     private void addRandomExit(TETile[][] world, Random RANDOM) {
         Position p = new Position(RandomUtils.uniform(RANDOM, 3, WIDTH - 3), RandomUtils.uniform(RANDOM, 3, HEIGHT - 3)); //在所有离边界距离大于3的点中随机产生一个点
-        while (!world[p.x][p.y].equals(Tileset.WALL)) {                                                                                 //如果这个点什么也没有
+        while (!world[p.x][p.y].equals(Tileset.WALL)) {                                                                                 //如果这个点不是墙
             p = new Position(RandomUtils.uniform(RANDOM, 3, WIDTH - 3), RandomUtils.uniform(RANDOM, 3, HEIGHT - 3));      //重新再选一个点
         }
         world[p.x][p.y] = Tileset.UNLOCKED_DOOR;                                                                                      //在这个点装上没锁的门
@@ -253,7 +252,7 @@ public class RandomWorldGenerator {
 
     public Position addRandomAvatar(TETile[][] world, Random RANDOM) {
         Position p = new Position(RandomUtils.uniform(RANDOM, 3, WIDTH - 3), RandomUtils.uniform(RANDOM, 3, HEIGHT - 3));
-        if(!world[p.x][p.y].equals(Tileset.FLOOR)) {
+        while (!world[p.x][p.y].equals(Tileset.FLOOR)) {
             p = new Position(RandomUtils.uniform(RANDOM, 3, WIDTH - 3), RandomUtils.uniform(RANDOM, 3, HEIGHT - 3));
         }
         world[p.x][p.y] = Tileset.AVATAR;
