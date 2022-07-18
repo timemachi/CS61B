@@ -59,8 +59,8 @@ public class RandomWorldGenerator {
      * @param RANDOM 随机数生成器
      */
     private void placeRandomRoom(TETile[][] world, Position start, Random RANDOM) {
-        int roomWidth = RandomUtils.uniform(RANDOM, 5, 10);  //房屋的宽和高：(5. 10]随机数，每次引用都会不一样
-        int roomHeight = RandomUtils.uniform(RANDOM, 5, 10);
+        int roomWidth = RandomUtils.uniform(RANDOM, 10, WIDTH / 5);  //房屋的宽和高：(5. 10]随机数，每次引用都会不一样
+        int roomHeight = RandomUtils.uniform(RANDOM, 10, HEIGHT / 5);
         if(canPlaceARoom(world, start, roomWidth, roomHeight)) { //如果房子可以放进去
 
             //Draw a room surrounded by wall 画墙

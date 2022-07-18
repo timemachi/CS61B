@@ -8,9 +8,9 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class World {
-    private static int height = 0;
-    private static int width = 0;
-    private static TETile[][] worldMap;
+    private final int height;
+    private final int width;
+    private TETile[][] worldMap;
 
     public World(int width, int height) {
         this.height = height;
@@ -35,42 +35,36 @@ public class World {
             }
         }
         //create random rooms in the map
-        int numOfRoom = random.nextInt(5, 9);
+        int numOfRoom = random.nextInt(8, 12);
         ArrayList<Room> rooms = new ArrayList<Room>();
         int num = 0; // number of room already created
         while (num <= numOfRoom) {
             int x = random.nextInt(1, width - 1);
             int y = random.nextInt(1, height - 1);
             position p = new position(x, y);
-            int L = random.nextInt(8, width / 3);
-            int H = random.nextInt(8, height / 3 );
+            int L = random.nextInt(7, width / 3);
+            int H = random.nextInt(5, height / 3);
             Room room = new Room(p, L, H);
             if (validRoom(room)) {
-                addRectangularRoom(room);
-                rooms.add(room);
                 num += 1;
+                rooms.add(room);
+                addRectangularRoom(room);
             }
         }
-        // set the door for every room
-        TETile tile = Tileset.UNLOCKED_DOOR;
-        for (Room r : rooms) {
-            r.setRandomUnlockedDoors(n);
-        }
+        //TODO 有了room这个class，可以更容易获得每个room的信息了
     }
-    public class Room {
-        private final position position;
-        private final int length;
-        private final int height;
-        private ArrayList<position> doors;
+    public static class Room {
+        private static position position;
+        private static int length;
+        private static int height;
 
         public Room(position p, int L, int H) {
             this.position = p;
             this.length = L;
             this.height = H;
-            this.doors = new ArrayList<>();
         }
         public ArrayList<position> getPositions() {
-            ArrayList<position> positions = new ArrayList<>();
+            ArrayList<position> positions = new ArrayList<position>();
             for (int i = position.x; i < position.x + length; i++) {
                 for (int j = position.y; j < position.y + height; j++) {
                     position temp = new position(i, j);
@@ -80,7 +74,7 @@ public class World {
             return positions;
         }
         public ArrayList<position> getWalls() {
-            ArrayList<position> walls = new ArrayList<>();
+            ArrayList<position> walls = new ArrayList<position>();
             for (position a : this.getPositions()) {
                 if (a.x == position.x || a.x == position.x + length - 1
                         || a.y == position.y || a.y == position.y + height - 1) {
@@ -89,100 +83,25 @@ public class World {
             }
             return walls;
         }
-        public void setRandomUnlockedDoors(long seed) {
-            TETile tile = Tileset.UNLOCKED_DOOR;
-            Random random = new Random(seed);
-            ArrayList<position> walls = getWalls();
-            int numOfWall = walls.size();
-            int numOfDoor = random.nextInt(1, 2);  //1 door
-            int counter = 0;
-            while (counter < numOfDoor) {
-                int index = random.nextInt(numOfWall);
-                position d = walls.get(index);
-                if (helperRandomDoor(d,8)) {
-                    draw(d, tile);
-                    counter += 1;
-                    doors.add(d);
-                } else {
-                    continue;
-                }
-            }
-        }
-        /**
-         *必须是墙；不能是四个点；不能离周围建筑太近
-         * @param p potential door position
-         * @param n distance with the other thing from the door
-         * @return  If is a good position to set a door
-         */
-        private boolean helperRandomDoor(position p, int n) {
-            if (!worldMap[p.x][p.y].description().equals("wall")) {
-                return false;
-            }
-            if(p.samePosition(position) || p.samePosition(position.verticalMove(height - 1))
-                    || p.samePosition(position.horizontalMove(length - 1))
-                    || p.samePosition(position.verticalMove(height - 1).horizontalMove(length - 1))){
-                return false;
-            }
+        //TODO 给room加一个开门（与外界联通）的功能：可以开锁着的门和非锁着的门。arguments是point（检查是否是墙）和TETile（确定材质）
 
-
-            int direction = 0;
-            if (p.horizontalMove(-1).emptyPoint()) {
-                direction = 1;
-            } //left
-            if (p.horizontalMove(1).emptyPoint()) {
-                direction = 2;
-            } //right
-            if (p.verticalMove(1).emptyPoint()) {
-                direction = 3;
-            } //up
-            if (p.verticalMove(-1).emptyPoint()) {
-                direction = 4;
-            } //down
-            switch (direction) {
-                case 1:
-                    return p.horizontalMove(-n).emptyPoint();
-                case 2:
-                    return p.horizontalMove(n).emptyPoint();
-                case 3:
-                    return p.verticalMove(n).emptyPoint();
-                case 4:
-                    return p.verticalMove(-n).emptyPoint();
-            }
-            return false;
-        }
     }
 
     /**
      * Helper class to localise one tile in world:
-     * .x is weight,
-     * .y is height
+     * x is weight,
+     * y is height
      */
-    private class position {
+    private static class position {
         int x;
         int y;
         position(int x, int y) {
             this.x = x;
             this.y = y;
         }
-        public boolean emptyPoint() {
-            return x >= 0 && y >= 0 && x < width && y < height && worldMap[x][y].description().equals("nothing");
-        }
-        public position verticalMove(int n) {
-            position up = new position(x, y + n);
-            return up;
-        }
-        public position horizontalMove(int n) {
-            position right = new position(x + n, y);
-            return right;
-        }
-
-        public boolean samePosition(position p) {
-            if (x == p.x && y == p.y) {return true;}
-            return false;
-        }
     }
 
-    public static void draw(position p, TETile tile) {
+    public void draw(position p, TETile tile) {
         worldMap[p.x][p.y] = tile;
     }
 
@@ -229,12 +148,15 @@ public class World {
         }
         return true;
     }
+
     public static void main(String[] args) {
-        World world = new World(80, 60);
-        world.randomMap(5452);
+        World world = new World(80, 40);
+        world.randomMap(4555);
 
         TERenderer ter = new TERenderer();
-        ter.initialize(80, 60);
+        ter.initialize(80, 40);
         ter.renderFrame(world.worldMap);
     }
+
+
 }
