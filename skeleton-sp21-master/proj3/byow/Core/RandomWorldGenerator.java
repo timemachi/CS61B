@@ -3,7 +3,9 @@ import byow.TileEngine.TERenderer;
 import byow.TileEngine.TETile;
 import byow.TileEngine.Tileset;
 import byow.lab12.Position;
+import edu.princeton.cs.introcs.StdDraw;
 
+import java.awt.*;
 import java.util.*;
 public class RandomWorldGenerator {
     TERenderer ter = new TERenderer();
@@ -28,15 +30,15 @@ public class RandomWorldGenerator {
             placeRandomRoom(randomWorldFrame, roomStart, RANDOM); //随机放置房子。三个arguments分别是：1.地图；2.刚刚生成的随机position； 3.RANDOM
         }                                                           //但是有可能放不了房子。因此要尝试这么多次。这么做后果是会放好多房子在里面。但是感觉算法很奇怪。可是随机性很好，纯粹靠尝试。
         //下面这个神奇的算法更是重量级，纯粹用随机性随机放置hallway。所以要尝试更多次。让我们来看看效果
-        for(int i = 0; i < Math.max(WIDTH, HEIGHT) * 2; i++) { //尝试次数：高宽中较大值的2倍
-            Position hallwayStart = new Position(RandomUtils.uniform(RANDOM, WIDTH), RandomUtils.uniform(RANDOM, HEIGHT)); //一样的方法：生成随机hallwayStart
-            placeARandomHallway(randomWorldFrame, hallwayStart, RANDOM);                                                   //放置随机hallway
-        }
-        removeWall(randomWorldFrame);
-        addRandomExit(randomWorldFrame, RANDOM);
-        addRandomAvatar(randomWorldFrame, RANDOM);
-        ter.renderFrame(randomWorldFrame);
-        return randomWorldFrame;
+         for(int i = 0; i < Math.max(WIDTH, HEIGHT) * 2; i++) { //尝试次数：高宽中较大值的2倍
+             Position hallwayStart = new Position(RandomUtils.uniform(RANDOM, WIDTH), RandomUtils.uniform(RANDOM, HEIGHT)); //一样的方法：生成随机hallwayStart
+             placeARandomHallway(randomWorldFrame, hallwayStart, RANDOM);                                                   //放置随机hallway
+         }
+         removeWall(randomWorldFrame);
+         addRandomExit(randomWorldFrame, RANDOM);
+         addRandomAvatar(randomWorldFrame, RANDOM);
+         ter.renderFrame(randomWorldFrame);
+         return randomWorldFrame;
     }
 
     /**
@@ -90,7 +92,7 @@ public class RandomWorldGenerator {
      * @return 能不能放房子进去
      */
     private boolean canPlaceARoom(TETile[][] world, Position p, int roomWidth, int roomHeight) {
-        if(p.x + roomWidth >= WIDTH - 3|| p.y + roomHeight >= HEIGHT - 3 || p.x < 3 || p.y < 3) { //先看房子有没有离地图边缘3格
+        if(p.x + roomWidth >= WIDTH - 5|| p.y + roomHeight >= HEIGHT - 5 || p.x < 5 || p.y < 5) { //先看房子有没有离地图边缘3格
             return false;
         }
         for(int i = p.x; i < p.x + roomWidth; i++) {    //检查房子的每个点：如果不是nothing就返回false
@@ -213,9 +215,9 @@ public class RandomWorldGenerator {
 
     private boolean needRemoval(TETile[][] world, Position p) {                                                        //给定一个地图和一个点
         if((world[p.x + 1][p.y].equals(Tileset.FLOOR) && world[p.x - 1][p.y].equals(Tileset.FLOOR) &&                  //如果 这个点右边的一个点是地板 而且 这个点左边的一个点也是地板
-                world[p.x][p.y - 1].equals(Tileset.WALL) && world[p.x][p.y + 1].equals(Tileset.WALL)) ||               //而且 这个点下面的一个点是墙 而且 这个点上面的一个点是墙         或者
+                world[p.x][p.y - 1].equals(Tileset.WALL) && world[p.x][p.y + 1].equals(Tileset.WALL) && world[p.x][p.y].equals(Tileset.WALL)) ||               //而且 这个点下面的一个点是墙 而且 这个点上面的一个点是墙         或者
                 (world[p.x + 1][p.y].equals(Tileset.WALL) && world[p.x - 1][p.y].equals(Tileset.WALL) &&               //这个点右边的一个点是墙 而且 这个点左边的一个点是墙
-                        world[p.x][p.y - 1].equals(Tileset.FLOOR) && world[p.x][p.y + 1].equals(Tileset.FLOOR))) {     //而且 这个点下面的一个点是地板 而且 这个点上面的一个点是地板
+                        world[p.x][p.y - 1].equals(Tileset.FLOOR) && world[p.x][p.y + 1].equals(Tileset.FLOOR) && world[p.x][p.y].equals(Tileset.WALL))) {     //而且 这个点下面的一个点是地板 而且 这个点上面的一个点是地板
             return true;                                                                                               //这个点就应该被移除？这不是说明这玩意在走廊里面吗  说明这个走廊点应该移除！
         } else {
             return false;
@@ -244,7 +246,10 @@ public class RandomWorldGenerator {
 
     private void addRandomExit(TETile[][] world, Random RANDOM) {
         Position p = new Position(RandomUtils.uniform(RANDOM, 3, WIDTH - 3), RandomUtils.uniform(RANDOM, 3, HEIGHT - 3)); //在所有离边界距离大于3的点中随机产生一个点
-        while (!world[p.x][p.y].equals(Tileset.WALL)) {                                                                                 //如果这个点不是墙
+        while (!(world[p.x - 1][p.y].equals(Tileset.FLOOR) && world[p.x + 1][p.y].equals(Tileset.NOTHING))
+                && !(world[p.x + 1][p.y].equals(Tileset.FLOOR) && world[p.x - 1][p.y].equals(Tileset.NOTHING))
+                && !(world[p.x][p.y + 1].equals(Tileset.FLOOR) && world[p.x][p.y - 1].equals(Tileset.NOTHING))
+                && !(world[p.x][p.y - 1].equals(Tileset.FLOOR) && world[p.x][p.y + 1].equals(Tileset.NOTHING))) {                                                                                 //如果这个点不是墙
             p = new Position(RandomUtils.uniform(RANDOM, 3, WIDTH - 3), RandomUtils.uniform(RANDOM, 3, HEIGHT - 3));      //重新再选一个点
         }
         world[p.x][p.y] = Tileset.UNLOCKED_DOOR;                                                                                      //在这个点装上没锁的门
