@@ -2,12 +2,13 @@ package byow.Core;
 
 import byow.TileEngine.TERenderer;
 import byow.TileEngine.TETile;
+import byow.TileEngine.Tileset;
 import edu.princeton.cs.introcs.StdDraw;
 
 import java.awt.*;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.nio.Buffer;
+import java.util.Scanner;
 
 public class Engine {
     TERenderer ter = new TERenderer();
@@ -25,31 +26,38 @@ public class Engine {
     public void interactWithKeyboard() throws IOException {
         mainMenu();
         String input = "";
-        while (!input.toUpperCase().contains("S")) {
+        while (true) {
             if (!StdDraw.hasNextKeyTyped()) {
                 continue;
             }
             char key = StdDraw.nextKeyTyped();
             input += key;
-            if (input.toUpperCase().contains("N")) {
-                int seedStart = input.toUpperCase().indexOf("N") + 1;
+            if (input.toUpperCase().contains("L")) {
+                ter.initialize(WIDTH, HEIGHT);
+                File savedFile = new File("byow\\Core\\savefile.txt");
+                if (savedFile.exists()) {
+                    loadFile(savedFile);
+                    break;
+                }
+            }
+            if (input.toUpperCase().contains("N")) { //已经开始输入数字了
                 String seed = "";
+                int seedStart = input.toUpperCase().indexOf("N") + 1;
                 for (char i : input.substring(seedStart).toCharArray()) {
                     if (Character.isDigit(i)) {
                         seed += i;
                     }
                 }
                 drawSeed(seed);
-                if (seed.length() > 0) {
+                if (input.toUpperCase().contains("S")) {
                     SEED = Long.parseLong(seed);
+                    RandomWorldGenerator randomWorldGenerator = new RandomWorldGenerator(WIDTH, HEIGHT, SEED);
+                    world = randomWorldGenerator.getRandomWorldFrame();
+                    break;
                 }
             }
             continue;
         }
-        // Create random world
-        RandomWorldGenerator randomWorldGenerator = new RandomWorldGenerator(WIDTH, HEIGHT, SEED);
-        world = randomWorldGenerator.getRandomWorldFrame();
-
         //输入:q的时候需要强制储存并退出；如果只输入q：询问是否储存，如果是，就是储存。重置input，并确定这里面没有q
         input = "";
         while (true) {
@@ -73,20 +81,51 @@ public class Engine {
                     System.exit(0);
                 }
                 String S = input.substring(indexOfQ);
-                saveWorld(S);
                 if (S.contains("Y") || S.contains("N")) {
+                    saveWorld(S);
                     input = "";
+                } else{
+                    saveWorld(S);
                 }
             }
             if (!StdDraw.hasNextKeyTyped()) {
                 continue;
             }
-
             char key = StdDraw.nextKeyTyped();
             input += key;
             input = input.toUpperCase();
-
         }
+    }
+
+    /**
+     * @source https://stackoverflow.com/questions/4716503/reading-a-plain-text-file-in-java
+     * @param loadedFile
+     * @return
+     */
+    private TETile[][] loadFile(File loadedFile) throws IOException {
+        TETile[][] world = new TETile[WIDTH][HEIGHT];
+        //这个文件确实是存在的
+        Scanner sc = new Scanner(loadedFile);
+        int height = 0;   //最上面一行，也就是TETILE[][] world的从下往上最后一行，编号应该是HEIGHT - 1
+        while (sc.hasNextLine()) {
+            height -= 1;
+            String line = sc.nextLine();  //HEIGHT + height 行 的line
+            int weight = 0;
+            for (char c : line.toCharArray()) {
+                TETile tile = Tileset.NOTHING;
+                if (c == ' ') {tile = Tileset.NOTHING;}
+                if (c == '#') {tile = Tileset.WALL;}
+                if (c == '@') {tile = Tileset.AVATAR;}
+                if (c == '·') {tile = Tileset.FLOOR;}
+                if (c == '▢') {tile = Tileset.UNLOCKED_DOOR;}
+                world[weight][HEIGHT + height] = tile;
+                weight += 1;
+            }
+        }
+        sc.close();
+        ter.initialize(WIDTH, HEIGHT);
+        ter.renderFrame(world);
+        return world;
     }
 
     private void saveWorld(String S) throws IOException {
