@@ -19,6 +19,7 @@ public class Engine {
 
     private TETile[][] world;
 
+
     /**
      * Method used for exploring a fresh world. This method should handle all inputs,
      * including inputs from the main menu.
@@ -26,6 +27,7 @@ public class Engine {
     public void interactWithKeyboard() throws IOException {
         mainMenu();
         String input = "";
+        //开始界面的三个功能：新建游戏；快速载入‘
         while (true) {
             if (!StdDraw.hasNextKeyTyped()) {
                 continue;
@@ -33,12 +35,14 @@ public class Engine {
             char key = StdDraw.nextKeyTyped();
             input += key;
             if (input.toUpperCase().contains("L")) {
-                ter.initialize(WIDTH, HEIGHT);
                 File savedFile = new File("byow\\Core\\savefile.txt");
                 if (savedFile.exists()) {
                     loadFile(savedFile);
                     break;
                 }
+            }
+            if (input.toUpperCase().contains("Q") && !input.toUpperCase().contains("N")) {
+                System.exit(0);
             }
             if (input.toUpperCase().contains("N")) { //已经开始输入数字了
                 String seed = "";
@@ -78,7 +82,7 @@ public class Engine {
                 //检查有没有:在前面
                 if (input.contains(":Q")) {
                     saveWorld("Q");
-                    System.exit(0);
+
                 }
                 String S = input.substring(indexOfQ);
                 if (S.contains("Y") || S.contains("N")) {
@@ -92,6 +96,8 @@ public class Engine {
                 continue;
             }
             char key = StdDraw.nextKeyTyped();
+            CharacterMovement m = new CharacterMovement(world);
+            world = m.Move(key);
             input += key;
             input = input.toUpperCase();
         }
