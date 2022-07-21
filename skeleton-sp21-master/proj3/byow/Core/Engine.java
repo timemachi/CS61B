@@ -103,7 +103,7 @@ public class Engine {
      * @return
      */
     private TETile[][] loadFile(File loadedFile) throws IOException {
-        TETile[][] world = new TETile[WIDTH][HEIGHT];
+        TETile[][] loadedWorld = new TETile[WIDTH][HEIGHT];
         //这个文件确实是存在的
         Scanner sc = new Scanner(loadedFile);
         int height = 0;   //最上面一行，也就是TETILE[][] world的从下往上最后一行，编号应该是HEIGHT - 1
@@ -118,14 +118,15 @@ public class Engine {
                 if (c == '@') {tile = Tileset.AVATAR;}
                 if (c == '·') {tile = Tileset.FLOOR;}
                 if (c == '▢') {tile = Tileset.UNLOCKED_DOOR;}
-                world[weight][HEIGHT + height] = tile;
+                loadedWorld[weight][HEIGHT + height] = tile;
                 weight += 1;
             }
         }
         sc.close();
         ter.initialize(WIDTH, HEIGHT);
-        ter.renderFrame(world);
-        return world;
+        ter.renderFrame(loadedWorld);
+        this.world = loadedWorld;
+        return loadedWorld;
     }
 
     private void saveWorld(String S) throws IOException {
